@@ -4,9 +4,8 @@
 // file public/src/client/account/settings.js
 
 const assert = require('assert');
-const proxyquire = require('proxyquire').noCallThru();
 
-// These mock the implementations of the modules that are used in the file
+// Mock the implementations of the modules that are used in the file
 const apiMock = {
 	put: (url, data) => Promise.resolve(data.settings),
 };
@@ -27,12 +26,19 @@ const hooksMock = {
 	fire: () => {},
 };
 
-const AccountSettings = proxyquire('../public/src/client/account/settings', {
-	api: apiMock,
-	alerts: alertsMock,
-	components: componentsMock,
-	hooks: hooksMock,
-});
+// Mock the dependencies by temporarily replacing them in the global scope
+const originalApi = global.api;
+const originalAlerts = global.alerts;
+const originalComponents = global.components;
+const originalHooks = global.hooks;
+
+global.api = apiMock;
+global.alerts = alertsMock;
+global.components = componentsMock;
+global.hooks = hooksMock;
+
+// Import the AccountSettings module after setting up the mocks
+const AccountSettings = require('../../../public/src/client/account/settings');
 
 describe('AccountSettings - saveSettings', () => {
 	let savedSkin = '';
@@ -44,6 +50,14 @@ describe('AccountSettings - saveSettings', () => {
 		global.$ = require('jquery');
 		global.ajaxify = { data: { template: { name: 'account/settings' }, uid: 1 } };
 		global.config = { relative_path: '', cache_buster: '123', bootswatchSkin: '', defaultBootswatchSkin: '' };
+	});
+
+	// Restore the original global objects after each test
+	afterEach(() => {
+		global.api = originalApi;
+		global.alerts = originalAlerts;
+		global.components = originalComponents;
+		global.hooks = originalHooks;
 	});
 
 	it('should save settings and call API', (done) => {
