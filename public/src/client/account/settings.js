@@ -1,5 +1,7 @@
 'use strict';
 
+const { Console } = require("winston/lib/winston/transports");
+
 
 define('forum/account/settings', [
 	'forum/account/header', 'components', 'api', 'alerts', 'hooks',
@@ -81,6 +83,7 @@ define('forum/account/settings', [
 
 	// Alerts the user that the settings have been saved and updates the configuration.
 	function handleNewSettings(newSettings) {
+		Console.log('Logging Jullia Montejo');
 		alerts.success('[[success:settings-saved]]');
 		processNewSettings(newSettings);
 	}
