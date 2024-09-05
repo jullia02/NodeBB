@@ -1,6 +1,6 @@
 'use strict';
 
-const { Console } = require("winston/lib/winston/transports");
+const { Console } = require('winston/lib/winston/transports');
 
 
 define('forum/account/settings', [
